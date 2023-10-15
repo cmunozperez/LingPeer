@@ -28,7 +28,7 @@ if st.button("Suggest me reviewers!"):
         for name, kw_list, title, ms_id, _ in peers:
             st.subheader(name)
             if len(kw_list) == 0:
-                st.write('No keywords in common between this author and the abstract you provided.')  
+                st.write('No keywords in common between this author and the info you provided.')  
             else:
                 st.write('The following are keywords in common between this author and the abstract you provided.')
                 kw_acum = []
