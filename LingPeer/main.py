@@ -1,5 +1,6 @@
 #import numpy as np
 import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
 from clean_text import lemmatize_keywords, replace_ngrams, lemmatize_abstract
 import joblib
 import re
@@ -20,7 +21,7 @@ def preprocess(title, keywords, abstract):
      
     # This decapitalizes all words in the abstract
     abstract = ' '.join([word.lower() for word in abstract.split(' ')])
-     
+
     keywords = lemmatize_keywords(keywords)
     ngram_kws = []
     for kw in keywords.split(', '):
@@ -30,9 +31,9 @@ def preprocess(title, keywords, abstract):
             ngram_kws.append(kw)
     ngram_kws = ', '.join(ngram_kws)
     
-    abstract = ngram_kws + '. ' + abstract
+    abstract_kws = ngram_kws + '. ' + abstract
     
-    return (abstract, ngram_kws)
+    return (abstract, abstract_kws, ngram_kws)
     
 
 def model1(abstract):
@@ -129,7 +130,7 @@ def get_matching_keywords(author_list, ngram_kws, keywords):
         #print('----')
         kws_for_authors.append(orig_kws)
     
-    return zip(author_list, kws_for_authors)
+    return kws_for_authors
 
 #%%
 
@@ -137,25 +138,62 @@ def get_peers(title, keywords, abstract):
 
     preprocessed = preprocess(title, keywords, abstract)
     
-    model_A = model1(preprocessed[0])
+    model_A = model1(preprocessed[1])
     
     model_B = model2(preprocessed[0])
     
     authors_kws = kw_comparer(preprocessed[1])
     
-    filter_first = set([model_A[0][0]])
+    filter_first_a = set([model_A[0][0]])
     
-    filter_two_percent = set([name for name, score in model_A if score > 0.02])
+    filter_one_percent_a = set([name for name, score in model_A if score > 0.01])
     
-    filter_two_mods = set([name for name, score in model_A if score > 0.0015]) & set([name for name, score in model_B if score > 0.005])
+    filter_first_b = set([model_B[0][0]])
     
-    filter_kws = set([name for name, score in model_A if score > 0.0015]) & set(authors_kws[0])
+    filter_one_percent_b = set([name for name, score in model_B if score > 0.01])
     
-    final_list = filter_first | filter_two_percent | filter_two_mods | filter_kws
+    filter_two_mods = set([name for name, score in model_A if score > 0.001]) & set([name for name, score in model_B if score > 0.001])
     
-    authors_and_kws = sorted(list(get_matching_keywords(final_list, preprocessed[1], keywords)), reverse=True, key=lambda x: len(x[1]))
+    if len(authors_kws) > 0:
+        filter_kws = set([name for name, score in model_A if score > 0.001]) & set(authors_kws[0])
+    else:
+        filter_kws = set([])
     
-    return authors_and_kws
+    final_list = list(filter_first_a | filter_one_percent_a | filter_first_b | filter_one_percent_b |filter_two_mods | filter_kws)
+    
+    # This is to get the id of the most relevant paper for each author.
+    # First, we get a vector for the provided abstract
+    abstract_vect = c_vect2.transform([preprocessed[0]])
+    
+    # Now we calculate cosine similarity
+    
+    cosine_sims = cosine_similarity(abstract_vect, x2)
+    
+    cosine_sims = pd.DataFrame(cosine_sims).T
+    cosine_sims = cosine_sims.rename(columns={0: 'Cosine_sim'})
+    
+    cosine_sims[['Author', 'Title', 'Id']] = manuscripts[['Author', 'Title', 'Id']].copy()
+    
+    titles = []
+    
+    ids = []
+    
+    cos_sims = []
+    
+    for author in final_list:
+        filtered_df = cosine_sims[cosine_sims['Author'] == author]
+        max_index = filtered_df['Cosine_sim'].idxmax()
+        author_cs = filtered_df.at[max_index, 'Cosine_sim']
+        author_title = filtered_df.at[max_index, 'Title']
+        author_id = filtered_df.at[max_index, 'Id']
+        cos_sims.append(author_cs)
+        titles.append(author_title)
+        ids.append(author_id)
+    
+    matching_kws = get_matching_keywords(final_list, preprocessed[1], keywords)
+    
+    authors_and_info = sorted(list(zip(final_list, matching_kws, titles, ids, cos_sims)), reverse=True, key=lambda x: len(x[1]))      
+    return authors_and_info
 
 
 #%%
@@ -166,16 +204,18 @@ path = os.path.dirname(__file__)
 kw_dict = joblib.load(path + '/kw_dict.pkl')
 n_gram_dict = joblib.load(path + '/n_grams.pkl')
 
-# This loads the training data
-#df = pd.read_csv(path + '/authors_df.csv')
+# This loads the data of the authors
+manuscripts = pd.read_csv(path + '/manuscripts.csv')
 
 #The following loads the models and the vectorization of the abstracts
 classifier1 = joblib.load(path + '/classifier1.pkl')
 classifier2 = joblib.load(path + '/classifier2.pkl')
 c_vect1 = joblib.load(path + '/c_vect1.pkl')
 c_vect2 = joblib.load(path + '/c_vect2.pkl')
+x2 = joblib.load(path + '/x2.pkl')
 
 
+#%%
 # This is the part that asks for the info if the script is not imported
 if __name__ == "__main__":
     
@@ -188,7 +228,7 @@ if __name__ == "__main__":
     print()
     print('The following authors have worked on similar topics:')
     print()
-    for name, kw_list in result:
+    for name, kw_list, title, ms_id, _ in result:
         kw_toprint = ', '.join(kw_list)
-        print(f'\t-{name} has worked on {kw_toprint}')
+        print(f'\t-{name} has worked on {kw_toprint}. A relevant manuscript to check is "{title}", whose Lingbuzz id is {ms_id}.')
         print()

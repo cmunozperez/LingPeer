@@ -8,12 +8,11 @@ import joblib
 # This is the first classifier: naive bayes over authors
 #########################
 
-
 df1 = pd.read_csv('authors_df.csv')
 
 
 # This instantiates the TF-IDF vectorizer
-vectorizer1 = TfidfVectorizer(
+vectorizer1 = CountVectorizer(
     max_features=2500,
     stop_words='english',
     lowercase=True
@@ -36,9 +35,28 @@ joblib.dump(classifier1, file1)
 
 
 #This creates and saves a count vectorization of the abstracts
-c_vect1 = CountVectorizer(lowercase=True, stop_words='english', max_features=2500)
-c_vect1.fit_transform(df1['Abstracts'])
-joblib.dump(c_vect1, 'c_vect1.pkl')
+#c_vect1 = CountVectorizer(lowercase=True, stop_words='english', max_features=2500)
+#c_vect1.fit_transform(df1['Abstracts'])
+#joblib.dump(c_vect1, 'c_vect1.pkl')
+
+# This is a test. should be erased if it doesn't work
+joblib.dump(vectorizer1, 'c_vect1.pkl')
+
+
+#%%
+# This generates a dictionary with authors as keys and their keywords as values
+
+keyword_dict = {}
+
+for index, row in df1.iterrows():
+    author = row['Author']
+    keywords = row['Keywords']
+    
+    keyword_dict[author] = keywords
+
+joblib.dump(keyword_dict, 'kw_dict.pkl')
+
+
 
 
 #%%
@@ -51,7 +69,7 @@ df2 = pd.read_csv('manuscripts.csv')
 df2 = df2.dropna(subset=['Abstract'])
 #%%
 
-vectorizer2 = TfidfVectorizer(
+vectorizer2 = CountVectorizer(
         max_features=800,
         stop_words='english',
         lowercase=True
@@ -72,23 +90,24 @@ classifier2.fit(X_features2, y2)
 file2 = 'classifier2.pkl'
 joblib.dump(classifier2, file2)
 
-c_vect2 = CountVectorizer(lowercase=True, stop_words='english', max_features=800)
-c_vect2.fit_transform(df2['Abstract'])
+#c_vect2 = CountVectorizer(lowercase=True, stop_words='english', max_features=800)
+#c_vect2.fit_transform(df2['Abstract'])
+#joblib.dump(c_vect2, 'c_vect2.pkl')
 
-joblib.dump(c_vect2, 'c_vect2.pkl')
-
+# Test
+joblib.dump(vectorizer2, 'c_vect2.pkl')
+joblib.dump(X_features2, 'x2.pkl')
 
 #%%
 
-# This generates a dictionary with authors as keys and their keywords as values
+# vectorizer3 = CountVectorizer(
+#     max_features=800,
+#     stop_words='english',
+#     lowercase=True
+#     )
 
-keyword_dict = {}
+# #This fits and transform the abstracts
+# X_features3 = vectorizer3.fit_transform(df2['Abstract'])
 
-for index, row in df1.iterrows():
-    author = row['Author']
-    keywords = row['Keywords']
-    
-    keyword_dict[author] = keywords
-
-joblib.dump(keyword_dict, 'kw_dict.pkl')
-
+# #This creates and saves a count vectorization of the abstracts
+# joblib.dump(vectorizer3, 'c_vect3.pkl')

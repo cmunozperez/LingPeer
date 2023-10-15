@@ -33,7 +33,7 @@ def combine_abstracts_keywords(df):
         
         for row in range(len(df)):
             if author_in_list == df.iloc[row, 0]:
-                separated_keywords = df.iloc[row, 3].split(', ')
+                separated_keywords = df.iloc[row, 5].split(', ')
                 keywords.append(separated_keywords)
                 abstracts.append(df.iloc[row, 2])
         info = (author_in_list, keywords, abstracts)
@@ -91,7 +91,7 @@ def drop_authors(df, n_manuscripts):
 
     '''
     # This lists the authors of all the papers in the database
-    all_authors = pd.DataFrame(ms_byauthor(source_df), columns = ['Author', 'Abstract', 'Keywords'])
+    all_authors = pd.DataFrame(ms_byauthor(source_df), columns = ['Author', 'Keywords', 'Abstract', 'Title', 'Id'])
     
     # This counts how many papers each author has
     count_authors = all_authors.groupby('Author').count()
@@ -128,9 +128,41 @@ def ms_byauthor(source_df):
         for author in authors:
             keywords = source_df.iloc[row, 3]
             abstract = source_df.iloc[row, 7]
-            datapoint = (author, keywords, abstract)
+            title = source_df.iloc[row, 1]
+            ms_id = source_df.iloc[row, 0]
+            datapoint = (author, keywords, abstract, title, ms_id)
             data.append(datapoint)
     return data
+
+#%%
+
+def generate_manuscripts(source_df):
+      
+    manuscripts_df = pd.DataFrame(ms_byauthor(source_df), columns = ['Author', 'Keywords', 'Abstract', 'Title', 'Id'])
+
+    manuscripts_df = drop_authors(manuscripts_df, 2)
+
+    print()
+    print('Lemmatizing keywords...')
+    # This lemmatizes the keywords
+    manuscripts_df['Keywords'] = manuscripts_df['Keywords'].apply(lemmatize_keywords)
+    
+    # Generate n-gram dictionary and a column of n-gram keywords in manuscripts_df
+    get_ngrams2(manuscripts_df)
+
+    # Before replacing th n-grams in the abstract, it is necessary to lemmatize the abstracts
+    print()
+    print('Lemmatizing abstracts...')
+    manuscripts_df['Abstract'] = manuscripts_df['Abstract'].apply(lemmatize_abstract)
+    
+    print()
+    print('Replacing n-grams in abstracts...')
+    print('This might take a while.')
+    manuscripts_df['Abstract'] = manuscripts_df['Abstract'].apply(replace_ngrams)
+    
+    manuscripts_df.to_csv('manuscripts.csv', index=False)
+    
+    return manuscripts_df
 
 
 #%%
@@ -169,36 +201,6 @@ def authors(df):
 
 #%%
 
-def generate_manuscripts(source_df):
-      
-    manuscripts_df = pd.DataFrame(ms_byauthor(source_df), columns = ['Author', 'Keywords', 'Abstract'])
-
-    manuscripts_df = drop_authors(manuscripts_df, 2)
-
-    print()
-    print('Lemmatizing keywords...')
-    # This lemmatizes the keywords
-    manuscripts_df['Keywords'] = manuscripts_df['Keywords'].apply(lemmatize_keywords)
-    
-    # Generate n-gram dictionary and a column of n-gram keywords in manuscripts_df
-    get_ngrams2(manuscripts_df)
-
-    # Before replacing th n-grams in the abstract, it is necessary to lemmatize the abstracts
-    print()
-    print('Lemmatizing abstracts...')
-    manuscripts_df['Abstract'] = manuscripts_df['Abstract'].apply(lemmatize_abstract)
-    
-    print()
-    print('Replacing n-grams in abstracts...')
-    print('This might take a while.')
-    manuscripts_df['Abstract'] = manuscripts_df['Abstract'].apply(replace_ngrams)
-    
-    manuscripts_df.to_csv('manuscripts.csv', index=False)
-    
-    return manuscripts_df
-
-
-#%%
 def generate_dfs(source_df):
     
     manuscripts = generate_manuscripts(source_df)
@@ -226,3 +228,4 @@ source_df = source_df[source_df['Date'].dt.year >= 2016]
 source_df['Date'] = source_df['Date'].dt.strftime('%Y')
 
 
+prueba = generate_dfs(source_df)
