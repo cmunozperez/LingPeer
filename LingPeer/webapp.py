@@ -25,19 +25,24 @@ if st.button("Suggest me reviewers!"):
         st.write('The abstract must have a maximum lenght of 1000 words.')
     else:
         peers = get_peers(title, keywords, abstract)
-        for name, kw_list, title, ms_id, _ in peers:
-            st.subheader(name)
-            if len(kw_list) == 0:
-                st.write('No keywords in common between this author and the info you provided.')  
-            else:
-                st.write('This author and the info you provided have the following keywords in common.')
-                kw_acum = []
-                for kw in kw_list:
-                    kw_bullet = f'- :red[{kw}]'
-                    kw_acum.append(kw_bullet)
-                kw_acum = '\n'.join(kw_acum)
-                st.markdown(kw_acum)
-
-            url = f'https://ling.auf.net/{ms_id}'
-            st.markdown(f'As a reference, you can check their manuscript *[{title}]({url})*.')
-            st.divider()
+        if len(peers) == 0:
+            st.write('The search yielded no results.')
+            
+        else:
+            for name, kw_list, title, ms_id, _ in peers:
+                st.subheader(name)
+                if len(kw_list) == 0:
+                    st.write('No keywords in common between this author and the info you provided.')  
+                else:
+                    st.divider()
+                    st.write('This author has employed the following matching keywords.')
+                    kw_acum = []
+                    for kw in kw_list:
+                        kw_bullet = f'- :red[{kw}]'
+                        kw_acum.append(kw_bullet)
+                    kw_acum = '\n'.join(kw_acum)
+                    st.markdown(kw_acum)
+    
+                url = f'https://ling.auf.net/{ms_id}'
+                st.markdown(f'As a reference, you can check their manuscript *[{title}]({url})*.')
+                

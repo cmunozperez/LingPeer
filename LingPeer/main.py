@@ -144,11 +144,11 @@ def get_peers(title, keywords, abstract):
     
     authors_kws = kw_comparer(preprocessed[1])
     
-    filter_first_a = set([model_A[0][0]])
+    filter_first_a = set([]) #set([model_A[0][0]])
     
     filter_one_percent_a = set([name for name, score in model_A if score > 0.01])
     
-    filter_first_b = set([model_B[0][0]])
+    filter_first_b = set([]) #set([model_B[0][0]])
     
     filter_one_percent_b = set([name for name, score in model_B if score > 0.01])
     
