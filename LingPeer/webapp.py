@@ -30,7 +30,7 @@ if st.button("Suggest me reviewers!"):
             if len(kw_list) == 0:
                 st.write('No keywords in common between this author and the info you provided.')  
             else:
-                st.write('The following are keywords in common between this author and the abstract you provided.')
+                st.write('This author and the info you provided have the following keywords in common.')
                 kw_acum = []
                 for kw in kw_list:
                     kw_bullet = f'- :red[{kw}]'
