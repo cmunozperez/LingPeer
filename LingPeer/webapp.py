@@ -1,9 +1,15 @@
 from main import get_peers
 import streamlit as st
+import subprocess
+
+@st.cache_resource
+def download_en_core_web_sm():
+    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+    
 
 st.title('LingPeer')
 
-st.markdown("<i>Retrieves from [Lingbuzz](https://ling.auf.net) potential reviewers for papers in theoretical linguistics</i>", unsafe_allow_html=True)
+st.markdown("<i>Suggests potential reviewers for papers in theoretical linguistics based on data from [Lingbuzz](https://ling.auf.net)</i>", unsafe_allow_html=True)
 
 title = st.text_input("Title")
 
