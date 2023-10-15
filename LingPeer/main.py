@@ -212,7 +212,6 @@ classifier1 = joblib.load(path + '/classifier1.pkl')
 classifier2 = joblib.load(path + '/classifier2.pkl')
 c_vect1 = joblib.load(path + '/c_vect1.pkl')
 c_vect2 = joblib.load(path + '/c_vect2.pkl')
-x2 = joblib.load(path + '/x2.pkl')
 
 
 #%%
