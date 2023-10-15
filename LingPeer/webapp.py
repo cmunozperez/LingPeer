@@ -30,11 +30,11 @@ if st.button("Suggest me reviewers!"):
             
         else:
             for name, kw_list, title, ms_id, _ in peers:
+                st.divider()
                 st.subheader(name)
                 if len(kw_list) == 0:
                     st.write('No keywords in common between this author and the info you provided.')  
                 else:
-                    st.divider()
                     st.write('This author has employed the following matching keywords.')
                     kw_acum = []
                     for kw in kw_list:
