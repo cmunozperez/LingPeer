@@ -13,16 +13,16 @@ st.markdown("<i>Suggests potential reviewers for papers in theoretical linguisti
 
 title = st.text_input("Title")
 
-keywords = st.text_input("Keywords", help='Introduce between 3 and 12 keywords separated by commas or semicolons')
+keywords = st.text_input("Keywords", help='For better results, introduce at least 3 keywords separated by commas or semicolons')
 
-abstract = st.text_area("Abstract", height=50, help='The abstract must have a length of between 10 and 1000 words')
+abstract = st.text_area("Abstract", height=50, help='The abstract must have a maximum lenght of 1000 words')
 
 # Button to call the get_peers function
 if st.button("Suggest me reviewers!"):
-    if len(abstract.split()) < 10:
-        st.write('The abstract should be at least 10 words long.')
+    if any(char.isalnum() for char in title) == False and any(char.isalnum() for char in keywords) == False and any(char.isalnum() for char in abstract) == False:
+        st.write('Please, fill at least one of the fields.')
     elif len(abstract.split()) > 1000:
-        st.write('The abstract should be shorter than 1000 words.')
+        st.write('The abstract must have a maximum lenght of 1000 words.')
     else:
         peers = get_peers(title, keywords, abstract)
         for name, kw_list, title, ms_id, _ in peers:
@@ -39,5 +39,5 @@ if st.button("Suggest me reviewers!"):
                 st.markdown(kw_acum)
 
             url = f'https://ling.auf.net/{ms_id}'
-            st.markdown(f'As a reference, you can check their manuscript [*{title}*]({url}).')
+            st.markdown(f'As a reference, you can check their manuscript *[{title}]({url})*.')
             st.divider()

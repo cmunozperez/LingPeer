@@ -190,7 +190,7 @@ def get_peers(title, keywords, abstract):
         titles.append(author_title)
         ids.append(author_id)
     
-    matching_kws = get_matching_keywords(final_list, preprocessed[1], keywords)
+    matching_kws = get_matching_keywords(final_list, preprocessed[2], keywords)
     
     authors_and_info = sorted(list(zip(final_list, matching_kws, titles, ids, cos_sims)), reverse=True, key=lambda x: len(x[1]))      
     return authors_and_info
