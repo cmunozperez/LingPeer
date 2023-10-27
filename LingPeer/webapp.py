@@ -5,11 +5,31 @@ import subprocess
 @st.cache_resource
 def download_en_core_web_sm():
     subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
-    
 
+# This hides streamlit's info
+hide_streamlit_style = """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    </style>
+"""
+
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+# This inserts the link to the github repository
+st.markdown('''<div style="text-align: right;">
+            <small>
+            <a href="https://github.com/cmunozperez/LingPeer">GitHub</a>
+            </small>
+            ''', unsafe_allow_html=True)
+st.write("#")
+st.write("#")
+
+# Name of the web app
 st.title('LingPeer')
 
-st.markdown("<i>Suggests potential reviewers for papers in theoretical linguistics based on data from [Lingbuzz](https://ling.auf.net)</i>", unsafe_allow_html=True)
+# Description
+st.markdown("<i>Get potential reviewers for papers in theoretical linguistics based on data from [Lingbuzz](https://ling.auf.net)</i>", unsafe_allow_html=True)
 
 title = st.text_input("Title")
 
@@ -19,12 +39,17 @@ abstract = st.text_area("Abstract", height=50, help='The abstract must have a ma
 
 # Button to call the get_peers function
 if st.button("Suggest me reviewers!"):
+    # Ask to fill the fields if there are no words in them
     if any(char.isalnum() for char in title) == False and any(char.isalnum() for char in keywords) == False and any(char.isalnum() for char in abstract) == False:
         st.write('Please, fill at least one of the fields.')
+    # Word limit for the abstract
     elif len(abstract.split()) > 1000:
         st.write('The abstract must have a maximum lenght of 1000 words.')
     else:
+        # This runs the function
         peers = get_peers(title, keywords, abstract)
+        
+        # Message if no results are found
         if len(peers) == 0:
             st.write('The search yielded no results.')
             
