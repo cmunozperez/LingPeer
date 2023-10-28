@@ -1,3 +1,12 @@
+###########################################
+
+# This module generates several csv files that will be used to train the models.
+# Running it might take some time.
+# The relevant csv files are already provided. If you run this, you will overwrite them.
+
+###########################################
+
+
 import pandas as pd
 pd.options.mode.chained_assignment = None
 import re
@@ -209,9 +218,23 @@ def generate_dfs(source_df):
     return manuscripts, authors_df
 
 #%%
+print()
+enter_year = input("Would you like to set a custom start year for selecting abstracts? If you do, type 'y'. Otherwise, press Enter to continue with a year by default (2016). ")
+if enter_year.lower() == 'y':
+    year = input('Enter the year from which you would like to consider abstracts. ')
+else:
+    year = 2016
+
+print()
+enter_csv = input("Would you like to use new data from Lingbuzz? If you do, type 'y'. Otherwise, press Enter to continue with the provided data (lingbuzz_002_007537.csv). ")
+if enter_csv.lower() == 'y':
+    file = input('Enter the name of the csv file you want to use. ')
+else:
+    file = 'lingbuzz_002_007537.csv'
+
 
 # Load the data from lingbuzz
-source_df = pd.read_csv('lingbuzz_002_007537.csv')
+source_df = pd.read_csv(file)
 
 # Drop nan entries
 source_df.dropna(subset=['Title'], inplace=True)
@@ -224,8 +247,8 @@ source_df['Abstract'] = source_df['Title'] + '. ' + source_df['Abstract']
 
 # Giving format to the Date column and droping manuscripts older than 2016
 source_df['Date'] = pd.to_datetime(source_df['Date'])
-source_df = source_df[source_df['Date'].dt.year >= 2016]
+source_df = source_df[source_df['Date'].dt.year >= year]
 source_df['Date'] = source_df['Date'].dt.strftime('%Y')
 
 
-prueba = generate_dfs(source_df)
+generate_dfs(source_df)

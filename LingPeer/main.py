@@ -4,7 +4,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from clean_text import lemmatize_keywords, replace_ngrams, lemmatize_abstract
 import joblib
 import re
-#import argparse
+import argparse
 import os
 #import re
 
@@ -197,6 +197,18 @@ def get_peers(title, keywords, abstract):
 
 
 #%%
+
+# The following gives the option of generating new training data in case you want to use more current abstracts from Lingbuzz
+parser = argparse.ArgumentParser(description='An app that gets potential reviewers for abstracts in theoretical linguistics based on data from Lingbuzz')
+parser.add_argument('-newdata', action='store_true', help='Allows to change the training data set by providing new Lingbuzz data.')
+args = parser.parse_args()
+
+if args.newdata:
+    try:
+        import preprocessing
+        import training
+    except:
+        print('Something went wrong.')
 
 path = os.path.dirname(__file__)
 
