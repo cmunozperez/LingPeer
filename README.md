@@ -36,8 +36,8 @@ get_peers(title, keywords, abstract)
 The output of the `get_peers` function is a list of tuples, each of them including (i) the name of a potential reviewer, (ii) a list of keywords matching that author with the provided abstract, (iii) a sample manuscript of the author related to the abstract provided, (iv) the lingbuzz id of the manuscript, and (v) the cosine similarity between the abstract provided and the retrieved manuscript.
 
 
-## Retraining the Classifier
-You can retrain the program by providing a new dataset from Lingbuzz. To do this, follow these steps:
+## Retraining LingPeer with new data
+You can retrain the models used by LingPeer by providing a new dataset (perhaps more up to date) from Lingbuzz. To do this, follow these steps:
 
 1. Obtain a new dataset from Lingbuzz by running the [lingbuzz_scraper](https://github.com/cmunozperez/lingbuzz_scraper) tool.
 2. Place the newly generated csv file in the project directory.
