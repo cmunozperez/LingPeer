@@ -37,7 +37,7 @@ The output of the `get_peers` function is a list of tuples, each of them includi
 
 
 ## Retraining the Classifier
-You can retrain the classifier by providing a new dataset from Lingbuzz. To do this, follow these steps:
+You can retrain the program by providing a new dataset from Lingbuzz. To do this, follow these steps:
 
 1. Obtain a new dataset from Lingbuzz by running the [lingbuzz_scraper](https://github.com/cmunozperez/lingbuzz_scraper) tool.
 2. Place the newly generated csv file in the project directory.
@@ -47,7 +47,7 @@ You can retrain the classifier by providing a new dataset from Lingbuzz. To do t
 python main.py -newdata
 ```
 
-This will allow you to retrain the classifier using the new dataset.
+This will allow you to retrain the the models using the new dataset.
 
 
 
