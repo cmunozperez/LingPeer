@@ -1,6 +1,6 @@
 # LingPeer
 
-LingPeer is a web app that suggests potential reviewers for abstracts in theoretical linguistics based on data from Lingbuzz. You can access it by visiting the following URL:
+LingPeer is a web app that suggests potential reviewers for manuscripts in theoretical linguistics based on data from Lingbuzz. You can access it by visiting the following URL:
 
 [LingPeer](https://lingpeer.streamlit.app/)
 
