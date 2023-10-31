@@ -8,6 +8,8 @@ LingPeer is a web app that suggests potential reviewers for manuscripts in theor
 
 LingPeer works on data from [Lingbuzz.net](https://ling.auf.net/). It was collected using the [lingbuzz_scraper](https://github.com/cmunozperez/lingbuzz_scraper) tool.
 
+The current models in which LingPeer is running consider all authors or co-authors that uploaded at least two manuscripts to LingBuzz since __*January 2016*__.
+
 ## Usage
 
 LingPeer was designed to be used as a web application. You just need to provide the title of a manuscript, its keywords and abstract to get a list of potential reviewers. It is possible to get recommendations based on partial data (e.g., title and keywords only), but this provides less accurate results.
