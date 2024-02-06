@@ -2,6 +2,11 @@ from main import get_peers
 import streamlit as st
 import subprocess
 
+st.set_page_config(
+    page_title="LingPeer",
+    page_icon="👥"
+)
+
 @st.cache_resource
 def download_en_core_web_sm():
     subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
@@ -19,9 +24,10 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # This inserts the link to the github repository
 st.markdown('''<div style="text-align: right;">
             <small>
-            <a href="https://github.com/cmunozperez/LingPeer">GitHub</a>
+            Manuscript database: Jan 2016 to Jan 2024
             </small>
             ''', unsafe_allow_html=True)
+
 st.write("#")
 st.write("#")
 
